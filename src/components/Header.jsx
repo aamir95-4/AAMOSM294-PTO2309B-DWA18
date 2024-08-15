@@ -7,10 +7,17 @@ import {
   Button,
 } from "@nextui-org/react";
 import Login from "./Login.jsx";
+import { supabase } from "../components/database/supabase";
 
 export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = React.useState(true);
   const [showLoginOverlay, setShowLoginOverlay] = React.useState(false);
 
+  async function signOut() {
+    const { error } = await supabase.auth.signOut();
+    setIsLoggedIn((prev) => !prev);
+    if (error) console.error("Logout failed:", error);
+  }
   const handleLogInClick = () => {
     setShowLoginOverlay(true);
   };
@@ -30,13 +37,20 @@ export default function App() {
 
         <NavbarContent justify="end">
           <NavbarItem>
-            <Button
-              color="primary"
-              className="login-button"
-              onClick={handleLogInClick}
-            >
-              Log in
-            </Button>
+            {!isLoggedIn && (
+              <Button
+                color="primary"
+                className="login-button"
+                onClick={handleLogInClick}
+              >
+                Log in
+              </Button>
+            )}
+            {isLoggedIn && (
+              <Button onClick={signOut} color="primary">
+                Log out
+              </Button>
+            )}
           </NavbarItem>
         </NavbarContent>
       </Navbar>

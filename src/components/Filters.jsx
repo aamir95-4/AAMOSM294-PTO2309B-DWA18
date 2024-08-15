@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Dropdown,
   DropdownTrigger,
@@ -6,26 +7,13 @@ import {
   Button,
   Input,
 } from "@nextui-org/react";
+import genres from "./api/genres";
 
 export default function Filters() {
-  const genres = [
-    { id: 1, title: "Personal Growth" },
-    { id: 2, title: "True Crime and Investigative Journalism" },
-    { id: 3, title: "History" },
-    { id: 4, title: "Comedy" },
-    { id: 5, title: "Entertainment" },
-    { id: 6, title: "Business" },
-    { id: 7, title: "Fiction" },
-    { id: 8, title: "News" },
-    { id: 9, title: "Kids and Family" },
-  ];
-
-  const sortingOptions = [
-    { id: 1, title: "Newest" },
-    { id: 2, title: "Oldest" },
-    { id: 3, title: "A-Z" },
-    { id: 4, title: "Z-A" },
-  ];
+  const [sortingOptions, setSortingOptions] = React.useState(new Set(["Sort"]));
+  const [selectedGenres, setSelectedGenres] = React.useState(
+    new Set(["Genres"])
+  );
 
   return (
     <div className="filters-container">
@@ -44,22 +32,39 @@ export default function Filters() {
       <div className="filters-item-two">
         <Dropdown className="genres">
           <DropdownTrigger>
-            <Button color="default" variant="flat">
+            <Button color="default" variant="bordered">
               Genres
             </Button>
           </DropdownTrigger>
-          <DropdownMenu aria-label="genres" items={genres}>
-            {(item) => <DropdownItem key={item.key}>{item.title}</DropdownItem>}
+          <DropdownMenu
+            aria-label="genres"
+            selectionMode="multiple"
+            items={genres}
+            closeOnSelect={false}
+            selectedKeys={selectedGenres}
+            onSelectionChange={setSelectedGenres}
+          >
+            {(item) => <DropdownItem key={item.id}>{item.title}</DropdownItem>}
           </DropdownMenu>
         </Dropdown>
+
         <Dropdown className="sorting">
           <DropdownTrigger>
-            <Button color="default" variant="flat">
+            <Button color="default" variant="bordered" className="capitalize">
               Sort
             </Button>
           </DropdownTrigger>
-          <DropdownMenu aria-label="sort" items={sortingOptions}>
-            {(item) => <DropdownItem key={item.key}>{item.title}</DropdownItem>}
+          <DropdownMenu
+            aria-label="sorting selection"
+            variant="flat"
+            selectionMode="single"
+            selectedKeys={sortingOptions}
+            onSelectionChange={setSortingOptions}
+          >
+            <DropdownItem key="A-Z">A-Z</DropdownItem>
+            <DropdownItem key="Z-A">Z-A</DropdownItem>
+            <DropdownItem key="Newest">Newest</DropdownItem>
+            <DropdownItem key="Oldest">Oldest</DropdownItem>
           </DropdownMenu>
         </Dropdown>
       </div>
