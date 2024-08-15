@@ -1,0 +1,167 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/* Podcast Display Card */
+
+.pod-card {
+  max-width: 250px;
+}
+
+/* Hero Carousel */
+
+.hero-carousel {
+  position: relative;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  height: 300px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.hero-card {
+  position: fixed;
+  flex: 0 0 auto;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  margin-right: 10px;
+  scroll-snap-align: start;
+}
+
+/* Media Player Overlay */
+
+.media-player {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  translate: -50%;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.controls-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 300px;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Log in overlay */
+
+.login-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.login-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  position: relative;
+}
+
+.close-button {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  background: none;
+  border: none;
+  font-size: 0.5rem;
+  cursor: pointer;
+}
+
+/* Filters */
+
+.filters-container {
+  display: flex;
+  padding: 0px 20px 20px 20px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filters-item-one {
+  display: flex;
+  gap: 20px;
+  padding: 5px;
+}
+
+.filters-item-two {
+  display: flex;
+  gap: 10px;
+  padding: 5px;
+}
+
+@media (max-width: 768px) {
+  .filters-container {
+    flex-direction: column;
+  }
+}
+
+/* Main Content */
+.main-content {
+  padding: 20px;
+}
+
+.grid-container {
+  display: grid;
+  /* grid-template-columns: auto auto auto; */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.grid-item {
+  display: flex;
+  justify-content: center;
+}
+
+/* Individual Show Card */
+
+.show-card {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  width: 75%;
+  height: 300px;
+  max-height: 60%;
+  translate: -50%;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: scroll;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+}
+
+.show-card-header {
+  display: flex;
+  flex-direction: column;
+}
+.show-card-body {
+  overflow-y: scroll;
+  gap: 10px;
+}
