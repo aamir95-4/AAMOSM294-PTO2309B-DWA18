@@ -22,11 +22,14 @@ export default function MainContent({ podcasts }) {
         });
       }
     }
-    return podcasts.filter((podcast) => {
-      const podcastGenre = podcast.genres.map((val) => Number(val));
-      console.log(selectedGenres);
-    });
-    console.log(shownPodcasts);
+    if (selectedGenres.length !== 0)
+      return podcasts.filter((podcast) => {
+        const podcastGenre = podcast.genres.map((val) => val);
+        const numberArray = Array.from(selectedGenres).map(Number);
+        if (numberArray.length === 0) {
+          return podcasts;
+        } else return numberArray.some((genre) => podcastGenre.includes(genre));
+      });
   }, [podcasts, selectedGenres, searchTerm, sortingOptions]);
   const handleShowCardClick = (podcast) => {
     setSelectedPodcast(podcast);

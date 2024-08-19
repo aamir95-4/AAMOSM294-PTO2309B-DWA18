@@ -5,6 +5,7 @@ import Hero from "./components/Hero";
 import Header from "./components/Header";
 import MediaPlayer from "./components/MediaPlayer";
 import MainContent from "./components/MainContent";
+
 function App() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [podcasts, setPodcasts] = React.useState([]);

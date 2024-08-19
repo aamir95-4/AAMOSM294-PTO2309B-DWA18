@@ -47,7 +47,7 @@ export default function Filters({
             selectedKeys={selectedGenres}
             onSelectionChange={setSelectedGenres}
           >
-            {(item) => <DropdownItem key={+item.id}>{item.title}</DropdownItem>}
+            {(item) => <DropdownItem key={item.id}>{item.title}</DropdownItem>}
           </DropdownMenu>
         </Dropdown>
 
