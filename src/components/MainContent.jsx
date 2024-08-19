@@ -4,9 +4,30 @@ import Filters from "./Filters";
 import React from "react";
 import ShowCard from "./ShowCard";
 
-export default function MainContent(props) {
+export default function MainContent({ podcasts }) {
   const [showCardOverlay, setShowCardOverlay] = React.useState(false);
   const [selectedPodcast, setSelectedPodcast] = React.useState(null);
+  const [sortingOptions, setSortingOptions] = React.useState([]);
+  const [selectedGenres, setSelectedGenres] = React.useState([]);
+  const [searchTerm, setSearchTerm] = React.useState("");
+
+  const shownPodcasts = React.useMemo(() => {
+    if (selectedGenres.length === 0 && sortingOptions.length === 0) {
+      if (searchTerm === "") {
+        return podcasts;
+      } else {
+        return podcasts.filter((podcast) => {
+          const searchFields = `${podcast.title.toLowerCase()}`;
+          return searchFields.includes(searchTerm.toLowerCase());
+        });
+      }
+    }
+    return podcasts.filter((podcast) => {
+      const podcastGenre = podcast.genres.map((val) => Number(val));
+      console.log(selectedGenres);
+    });
+    console.log(shownPodcasts);
+  }, [podcasts, selectedGenres, searchTerm, sortingOptions]);
   const handleShowCardClick = (podcast) => {
     setSelectedPodcast(podcast);
     setShowCardOverlay(true);
@@ -20,10 +41,17 @@ export default function MainContent(props) {
   return (
     <div className="main-content">
       <div className="filters-container">
-        <Filters />
+        <Filters
+          selectedGenres={selectedGenres}
+          setSelectedGenres={setSelectedGenres}
+          sortingOptions={sortingOptions}
+          setSortingOptions={setSortingOptions}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+        />
       </div>
       <div className="grid-container">
-        {props.podcasts.map((podcast) => (
+        {shownPodcasts.map((podcast) => (
           <div className="grid-item" key={podcast.id}>
             <Card
               className="pod-card"

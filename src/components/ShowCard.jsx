@@ -29,7 +29,6 @@ export default function ShowCard({ podcast, onClose }) {
   React.useEffect(() => {
     if (podcast && podcast.id) {
       fetchSinglePodcast(podcast.id).then((data) => {
-        console.log(data);
         setPodcastData(data);
         setLoading(false);
       });
@@ -98,7 +97,7 @@ export default function ShowCard({ podcast, onClose }) {
             </div>
           </section>
 
-          <Accordion variant="shadow">
+          <Accordion className="show-card-seasons" variant="shadow">
             {podcastData.seasons.map((season, index) => (
               <AccordionItem
                 key={index}

@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Dropdown,
   DropdownTrigger,
@@ -9,12 +8,14 @@ import {
 } from "@nextui-org/react";
 import genres from "./api/genres";
 
-export default function Filters() {
-  const [sortingOptions, setSortingOptions] = React.useState(new Set(["Sort"]));
-  const [selectedGenres, setSelectedGenres] = React.useState(
-    new Set(["Genres"])
-  );
-
+export default function Filters({
+  selectedGenres,
+  setSelectedGenres,
+  sortingOptions,
+  setSortingOptions,
+  searchTerm,
+  setSearchTerm,
+}) {
   return (
     <div className="filters-container">
       <div className="filters-item-one">
@@ -24,6 +25,8 @@ export default function Filters() {
           clearable
           color="primary"
           placeholder="Search"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
         <Button className="favourites-button" color="primary" variant="shadow">
           Favourites
@@ -44,7 +47,7 @@ export default function Filters() {
             selectedKeys={selectedGenres}
             onSelectionChange={setSelectedGenres}
           >
-            {(item) => <DropdownItem key={item.id}>{item.title}</DropdownItem>}
+            {(item) => <DropdownItem key={+item.id}>{item.title}</DropdownItem>}
           </DropdownMenu>
         </Dropdown>
 
