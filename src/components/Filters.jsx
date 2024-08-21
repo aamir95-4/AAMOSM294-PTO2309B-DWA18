@@ -7,6 +7,7 @@ import {
   Input,
 } from "@nextui-org/react";
 import genres from "./api/genres";
+import PropTypes from "prop-types";
 
 export default function Filters({
   selectedGenres,
@@ -70,7 +71,29 @@ export default function Filters({
             <DropdownItem key="Oldest">Oldest</DropdownItem>
           </DropdownMenu>
         </Dropdown>
+        <Button
+          color="default"
+          variant="light"
+          className="capitalize"
+          onClick={() => {
+            setSearchTerm("");
+            setSelectedGenres([]);
+            setSortingOptions([]);
+          }}
+        >
+          Clear
+        </Button>
       </div>
     </div>
   );
 }
+
+Filters.propTypes = {
+  selectedGenres: PropTypes.array,
+  setSelectedGenres: PropTypes.func,
+  sortingOptions: PropTypes.array,
+  setSortingOptions: PropTypes.func,
+  searchTerm: PropTypes.string,
+  setSearchTerm: PropTypes.func,
+  podcasts: PropTypes.array,
+};

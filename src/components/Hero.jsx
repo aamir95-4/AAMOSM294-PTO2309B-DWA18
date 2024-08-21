@@ -1,5 +1,6 @@
 import React from "react";
 import { Card, CardFooter, Image, Button } from "@nextui-org/react";
+import PropTypes from "prop-types";
 
 export default function Hero(props) {
   const [slides, setSlides] = React.useState([]);
@@ -49,6 +50,7 @@ export default function Hero(props) {
               color="default"
               radius="lg"
               size="sm"
+              onClick={() => props.handleShowCardClick(slide)}
             >
               Listen Now
             </Button>
@@ -58,3 +60,8 @@ export default function Hero(props) {
     </div>
   );
 }
+
+Hero.propTypes = {
+  podcasts: PropTypes.array.isRequired,
+  handleShowCardClick: PropTypes.func.isRequired,
+};

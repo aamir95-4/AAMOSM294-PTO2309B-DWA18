@@ -203,3 +203,13 @@
   flex-direction: column;
   gap: 10px;
 }
+
+@media (max-width: 768px) {
+  .show-card-description {
+    display: none;
+  }
+
+  .show-card-body-image {
+    display: flex;
+  }
+}

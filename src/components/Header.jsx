@@ -8,16 +8,30 @@ import {
 } from "@nextui-org/react";
 import Login from "./Login.jsx";
 import { supabase } from "../components/database/supabase";
+import PropTypes from "prop-types";
 
-export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = React.useState(true);
+export default function Header({ session, setSession }) {
   const [showLoginOverlay, setShowLoginOverlay] = React.useState(false);
 
-  async function signOut() {
-    const { error } = await supabase.auth.signOut();
-    setIsLoggedIn((prev) => !prev);
-    if (error) console.error("Logout failed:", error);
-  }
+  React.useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogOutClick = () => {
+    supabase.auth.signOut();
+    setSession(null);
+  };
+
   const handleLogInClick = () => {
     setShowLoginOverlay(true);
   };
@@ -28,7 +42,7 @@ export default function App() {
 
   return (
     <div>
-      <Navbar variant="sticky">
+      <Navbar shouldHideOnScroll>
         <NavbarContent>
           <NavbarBrand>
             <p className="font-bold text-inherit">UAVVE</p>
@@ -37,7 +51,7 @@ export default function App() {
 
         <NavbarContent justify="end">
           <NavbarItem>
-            {!isLoggedIn && (
+            {!session && (
               <Button
                 color="primary"
                 className="login-button"
@@ -46,8 +60,8 @@ export default function App() {
                 Log in
               </Button>
             )}
-            {isLoggedIn && (
-              <Button onClick={signOut} color="primary">
+            {session && (
+              <Button onClick={handleLogOutClick} color="primary">
                 Log out
               </Button>
             )}
@@ -55,8 +69,17 @@ export default function App() {
         </NavbarContent>
       </Navbar>
       {showLoginOverlay && (
-        <Login isActive={showLoginOverlay} onClose={handleOverlayClose} />
+        <Login
+          session={session}
+          isActive={showLoginOverlay}
+          onClose={handleOverlayClose}
+        />
       )}
     </div>
   );
 }
+
+Header.propTypes = {
+  session: PropTypes.object,
+  setSession: PropTypes.func,
+};

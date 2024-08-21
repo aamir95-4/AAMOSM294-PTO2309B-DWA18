@@ -3,14 +3,20 @@ import {
   CardHeader,
   CardBody,
   Image,
-  Accordion,
-  AccordionItem,
   Button,
   CircularProgress,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  Accordion,
+  AccordionItem,
 } from "@nextui-org/react";
 import fetchSinglePodcast from "./api/fetchSinglePodcast";
 import React from "react";
 import genres from "./api/genres";
+import PropTypes from "prop-types";
+// import { addFavorite, removeFavorite } from "./database/favourites";
 
 function getGenreTitles(podcastGenres, allGenres) {
   return podcastGenres
@@ -21,19 +27,31 @@ function getGenreTitles(podcastGenres, allGenres) {
     .join(", ");
 }
 
-export default function ShowCard({ podcast, onClose }) {
+export default function ShowCard({ podcast, onClose, userId }) {
   const [podcastData, setPodcastData] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
   const [showFullDescription, setShowFullDescription] = React.useState(false);
+  const [selectedKeys, setSelectedKeys] = React.useState(new Set());
+
+  const selectedValue = React.useMemo(
+    () =>
+      Array.from(selectedKeys)
+        .map((key) => `Season ${key}`)
+        .join(", "),
+
+    [selectedKeys]
+  );
 
   React.useEffect(() => {
     if (podcast && podcast.id) {
       fetchSinglePodcast(podcast.id).then((data) => {
         setPodcastData(data);
         setLoading(false);
+        if (data.seasons.length > 0) {
+          setSelectedKeys(new Set([`${1}`]));
+        }
       });
     }
-
     document.body.classList.add("no-scroll");
 
     return () => {
@@ -96,20 +114,40 @@ export default function ShowCard({ podcast, onClose }) {
               )}
             </div>
           </section>
-
-          <Accordion className="show-card-seasons" variant="shadow">
-            {podcastData.seasons.map((season, index) => (
-              <AccordionItem
-                key={index}
-                aria-label={`Accordion ${index + 1}`}
-                title={`Season ${index + 1}`}
+          <section>
+            <Dropdown className="show-card-seasons">
+              <DropdownTrigger variant="bordered">
+                <Button>{selectedValue}</Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                aria-label="Seasons"
+                variant="flat"
+                disallowEmptySelection
+                selectionMode="single"
+                selectedKeys={selectedKeys}
+                onSelectionChange={setSelectedKeys}
               >
-                Episodes
+                {podcastData.seasons.map((season, index) => (
+                  <DropdownItem key={index + 1}>{`Season ${
+                    index + 1
+                  }`}</DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
+            <Accordion>
+              <AccordionItem key="1" aria-label="Episode 1" title="Episode 1">
+                <Button> --</Button>
               </AccordionItem>
-            ))}
-          </Accordion>
+            </Accordion>
+          </section>
         </CardBody>
       </Card>
     </div>
   );
 }
+
+ShowCard.propTypes = {
+  podcast: PropTypes.object.isRequired,
+  onClose: PropTypes.func.isRequired,
+  userId: PropTypes.string.isRequired,
+};
