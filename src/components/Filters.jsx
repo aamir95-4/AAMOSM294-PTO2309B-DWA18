@@ -29,9 +29,6 @@ export default function Filters({
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <Button className="favourites-button" color="primary" variant="shadow">
-          Favourites
-        </Button>
       </div>
       <div className="filters-item-two">
         <Dropdown className="genres">

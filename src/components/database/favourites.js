@@ -1,6 +1,7 @@
+/* eslint-disable no-unused-vars */
 import { supabase } from "./supabase";
 
-const addFavorite = async (userId, podcastId) => {
+export const addFavorite = async (userId, podcastId) => {
   const { data, error } = await supabase
     .from("User Favourites")
     .insert([{ user_id: userId, podcast_id: podcastId }]);
@@ -9,7 +10,7 @@ const addFavorite = async (userId, podcastId) => {
   else console.log("Favorite added:", data);
 };
 
-const removeFavorite = async (userId, podcastId) => {
+export const removeFavorite = async (userId, podcastId) => {
   const { data, error } = await supabase
     .from("User Favourites")
     .delete()
@@ -20,7 +21,7 @@ const removeFavorite = async (userId, podcastId) => {
   else console.log("Favorite removed:", data);
 };
 
-const getFavorites = async (userId) => {
+export const getFavorites = async (userId) => {
   const { data, error } = await supabase
     .from("User Favourites")
     .select("podcast_id")
@@ -29,5 +30,3 @@ const getFavorites = async (userId) => {
   if (error) console.error("Error fetching favorites:", error);
   else console.log("User favorites:", data);
 };
-
-export { addFavorite, removeFavorite, getFavorites };

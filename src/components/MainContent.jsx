@@ -1,12 +1,32 @@
-import { Card, CardHeader, CardBody, Image } from "@nextui-org/react";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Image,
+  useDisclosure,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalContent,
+  Button,
+  CircularProgress,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  Accordion,
+  AccordionItem,
+} from "@nextui-org/react";
 import moment from "moment";
 import Filters from "./Filters";
 import React from "react";
-import ShowCard from "./ShowCard";
 import genres from "./api/genres";
 import Hero from "./Hero";
-import PropTypes from "prop-types";
 import Fuse from "fuse.js";
+import fetchSinglePodcast from "./api/fetchSinglePodcast";
+import { addFavorite, removeFavorite } from "./database/favourites";
+import PropTypes from "prop-types";
 
 const getGenreTitles = (podcastGenres, allGenres) => {
   return podcastGenres
@@ -17,13 +37,24 @@ const getGenreTitles = (podcastGenres, allGenres) => {
     .join(", ");
 };
 
-export default function MainContent({ podcasts, session }) {
-  const [showCardOverlay, setShowCardOverlay] = React.useState(false);
+export default function MainContent({
+  podcasts,
+  session,
+  isPlaying,
+  setIsPlaying,
+}) {
   const [selectedPodcast, setSelectedPodcast] = React.useState(null);
   const [sortingOptions, setSortingOptions] = React.useState([]);
   const [selectedGenres, setSelectedGenres] = React.useState([]);
   const [searchTerm, setSearchTerm] = React.useState("");
   const [filteredPodcasts, setFilteredPodcasts] = React.useState(podcasts);
+  const [podcastData, setPodcastData] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
+  const [selectedKeys, setSelectedKeys] = React.useState(new Set());
+
+  const selectedKeysArray = Array.from(selectedKeys);
+
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const fuse = new Fuse(podcasts, {
     keys: ["title"],
@@ -33,6 +64,7 @@ export default function MainContent({ podcasts, session }) {
     let filtered = podcasts;
     const selectedGenresArray = Array.from(selectedGenres).map(Number);
     const sortingOptionsArray = Array.from(sortingOptions);
+
     if (selectedGenresArray.length > 0) {
       filtered = filtered.filter((podcast) =>
         selectedGenresArray.some((genre) =>
@@ -40,9 +72,8 @@ export default function MainContent({ podcasts, session }) {
         )
       );
     }
-    // Why is sorting not updating in realtime, have to double click
+
     if (sortingOptionsArray.length > 0) {
-      console.log(sortingOptionsArray);
       filtered = filtered.sort((a, b) => {
         if (sortingOptionsArray[0] === "Newest") {
           return moment(b.updated).diff(moment(a.updated));
@@ -65,9 +96,17 @@ export default function MainContent({ podcasts, session }) {
     setFilteredPodcasts(filtered);
   };
 
+  const selectedValue = React.useMemo(
+    () =>
+      Array.from(selectedKeys)
+        .map((key) => `Season ${key}`)
+        .join(", "),
+
+    [selectedKeys]
+  );
+
   React.useEffect(() => {
     applyFilters();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, selectedGenres, sortingOptions, podcasts]);
 
   React.useEffect(() => {
@@ -76,20 +115,58 @@ export default function MainContent({ podcasts, session }) {
       setSortingOptions([]);
     }
   }, [searchTerm]);
-  const handleShowCardClick = (podcast) => {
+
+  const handleCardClick = async (podcast) => {
+    setLoading(true);
     setSelectedPodcast(podcast);
-    setShowCardOverlay(true);
+
+    onOpen();
+
+    try {
+      const data = await fetchSinglePodcast(podcast.id);
+      setPodcastData(data);
+      if (data.seasons.length > 0) {
+        setSelectedKeys(new Set([`${1}`]));
+      }
+    } catch (error) {
+      console.error("Failed to fetch podcast data:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleOverlayClose = () => {
-    setShowCardOverlay(false);
-    setSelectedPodcast(null);
-  };
+  let audioInstance = null;
+
+  function playEpisode(fileUrl) {
+    if (audioInstance) {
+      audioInstance.pause();
+    }
+    audioInstance = new Audio(fileUrl);
+    audioInstance.play();
+
+    setIsPlaying(true);
+
+    audioInstance.addEventListener("ended", () => {
+      console.log("Episode finished playing.");
+      setIsPlaying(false);
+      audioInstance = null;
+    });
+  }
+
+  function pauseEpisode() {
+    if (audioInstance) {
+      audioInstance.pause();
+      console.log("Episode paused.");
+      setIsPlaying(false);
+    } else {
+      console.log("No episode is currently playing.");
+    }
+  }
 
   return (
     <>
       <div>
-        <Hero podcasts={podcasts} handleShowCardClick={handleShowCardClick} />
+        <Hero podcasts={podcasts} handleShowCardClick={handleCardClick} />
       </div>
       <div className="main-content">
         <div className="filters-container">
@@ -109,7 +186,7 @@ export default function MainContent({ podcasts, session }) {
               <Card
                 className="pod-card"
                 isPressable
-                onClick={() => handleShowCardClick(podcast)}
+                onClick={() => handleCardClick(podcast)}
               >
                 <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
                   <p className="text-tiny uppercase font-bold">
@@ -137,19 +214,103 @@ export default function MainContent({ podcasts, session }) {
             </div>
           ))}
         </div>
-        {showCardOverlay && (
-          <ShowCard
-            userId={session.user.id}
-            podcast={selectedPodcast}
-            onClose={handleOverlayClose}
-          />
-        )}
+
+        <Modal
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+          scrollBehavior="inside"
+        >
+          {loading ? (
+            <CircularProgress className="page-loading" label="Loading..." />
+          ) : podcastData ? (
+            <>
+              <ModalContent>
+                <ModalHeader className="flex flex-col gap-1">
+                  {podcastData.title}
+                </ModalHeader>
+                <ModalBody>
+                  <small>
+                    {getGenreTitles(selectedPodcast.genres, genres)}
+                  </small>
+                  <small className="text-default-500">
+                    Seasons: {podcastData.seasons.length}
+                  </small>
+                  <Image
+                    alt="Card background"
+                    className="object-cover rounded-xl"
+                    src={podcastData.image}
+                    width={270}
+                  />
+                  <small className="text-default-500">Episodes: 10</small>
+
+                  <Accordion>
+                    {podcastData.seasons[selectedKeysArray].episodes.map(
+                      (episode, index) => (
+                        <AccordionItem
+                          key={index + 1}
+                          aria-label={`Episode ${index + 1}`}
+                          title={episode.title}
+                        >
+                          <small>{episode.description}</small>
+                          <br />
+
+                          <Button
+                            color="primary"
+                            onClick={() => pauseEpisode()}
+                          >
+                            Pause
+                          </Button>
+
+                          <Button
+                            color="primary"
+                            onClick={() => playEpisode(episode.file)}
+                          >
+                            Play
+                          </Button>
+                        </AccordionItem>
+                      )
+                    )}
+                  </Accordion>
+                </ModalBody>
+                <ModalFooter>
+                  <Dropdown className="show-card-seasons">
+                    <DropdownTrigger variant="bordered">
+                      <Button>{selectedValue}</Button>
+                    </DropdownTrigger>
+                    <DropdownMenu
+                      aria-label="Seasons"
+                      variant="flat"
+                      disallowEmptySelection
+                      selectionMode="single"
+                      selectedKeys={selectedKeys}
+                      onSelectionChange={setSelectedKeys}
+                    >
+                      {podcastData.seasons.map((season, index) => (
+                        <DropdownItem key={index + 1}>
+                          {`Season ${index + 1}`}
+                        </DropdownItem>
+                      ))}
+                    </DropdownMenu>
+                  </Dropdown>
+                  <Button
+                    color="primary"
+                    onClick={() => addFavorite(session.user.id, podcastData.id)}
+                  >
+                    Favourite
+                  </Button>
+                </ModalFooter>
+              </ModalContent>
+            </>
+          ) : (
+            <p>Failed to load podcast details.</p>
+          )}
+        </Modal>
       </div>
     </>
   );
 }
 
-MainContent.propTypes = {
-  podcasts: PropTypes.array.isRequired,
-  session: PropTypes.object.isRequired,
+MainContent.PropTypes = {
+  podcasts: PropTypes.array,
+  session: PropTypes.object,
 };

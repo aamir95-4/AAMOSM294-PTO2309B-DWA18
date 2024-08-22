@@ -41,7 +41,12 @@ function App() {
   return (
     <>
       <Header session={session} setSession={setSession} />
-      <MainContent session={session} podcasts={podcasts} />
+      <MainContent
+        session={session}
+        podcasts={podcasts}
+        isPLaying={isPLaying}
+        setIsPlaying={setIsPlaying}
+      />
       {isPLaying && <MediaPlayer />}
     </>
   );
