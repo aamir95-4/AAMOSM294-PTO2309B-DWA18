@@ -96,15 +96,6 @@ export default function MainContent({
     setFilteredPodcasts(filtered);
   };
 
-  const selectedValue = React.useMemo(
-    () =>
-      Array.from(selectedKeys)
-        .map((key) => `Season ${key}`)
-        .join(", "),
-
-    [selectedKeys]
-  );
-
   React.useEffect(() => {
     applyFilters();
   }, [searchTerm, selectedGenres, sortingOptions, podcasts]);
@@ -126,7 +117,7 @@ export default function MainContent({
       const data = await fetchSinglePodcast(podcast.id);
       setPodcastData(data);
       if (data.seasons.length > 0) {
-        setSelectedKeys(new Set([`${1}`]));
+        setSelectedKeys(new Set([`${0}`]));
       }
     } catch (error) {
       console.error("Failed to fetch podcast data:", error);
@@ -241,19 +232,18 @@ export default function MainContent({
                     src={podcastData.image}
                     width={270}
                   />
-                  <small className="text-default-500">Episodes: 10</small>
+                  <small className="text-default-500">
+                    {`Episodes: ${podcastData.seasons[selectedKeysArray].episodes.length}`}
+                  </small>
 
                   <Accordion>
                     {podcastData.seasons[selectedKeysArray].episodes.map(
                       (episode, index) => (
                         <AccordionItem
-                          key={index + 1}
-                          aria-label={`Episode ${index + 1}`}
+                          key={index}
+                          aria-label={`Episode ${index}`}
                           title={episode.title}
                         >
-                          <small>{episode.description}</small>
-                          <br />
-
                           <Button
                             color="primary"
                             onClick={() => pauseEpisode()}
@@ -275,7 +265,9 @@ export default function MainContent({
                 <ModalFooter>
                   <Dropdown className="show-card-seasons">
                     <DropdownTrigger variant="bordered">
-                      <Button>{selectedValue}</Button>
+                      <Button>{`Season ${
+                        Number(selectedKeysArray) + 1
+                      }`}</Button>
                     </DropdownTrigger>
                     <DropdownMenu
                       aria-label="Seasons"
@@ -286,7 +278,7 @@ export default function MainContent({
                       onSelectionChange={setSelectedKeys}
                     >
                       {podcastData.seasons.map((season, index) => (
-                        <DropdownItem key={index + 1}>
+                        <DropdownItem key={index}>
                           {`Season ${index + 1}`}
                         </DropdownItem>
                       ))}
@@ -313,4 +305,6 @@ export default function MainContent({
 MainContent.PropTypes = {
   podcasts: PropTypes.array,
   session: PropTypes.object,
+  isPlaying: PropTypes.bool,
+  setIsPlaying: PropTypes.func,
 };
