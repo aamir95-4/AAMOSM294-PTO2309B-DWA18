@@ -302,7 +302,7 @@ export default function MainContent({
   );
 }
 
-MainContent.PropTypes = {
+MainContent.propTypes = {
   podcasts: PropTypes.array,
   session: PropTypes.object,
   isPlaying: PropTypes.bool,

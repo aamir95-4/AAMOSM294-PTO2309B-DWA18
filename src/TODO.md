@@ -2,7 +2,8 @@ Filters
 To update filters to work correctly. The filters need to work together. Favourites to only show when logged in, and favourites should be searchable/filterable.
 
 Header
-Once Logged in, change the button to a dropdown with option to log out, clear listening history and any other options for the profile. Make sure to stay logged in when page refreshes.
+Profile: functionality, upload avatar clear listening history
+header avatar to match profile avatar
 
 Main Content
 Media Player: Open and close + add functionality

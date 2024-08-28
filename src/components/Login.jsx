@@ -10,26 +10,44 @@ import {
   useDisclosure,
   Input,
   Link,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  Avatar,
 } from "@nextui-org/react";
 import PropTypes from "prop-types";
+import Profile from "./Profile";
 
 export default function Login({ session, setSession }) {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [signUp, setSignUp] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState("");
+  const [isProfileOpen, setIsProfileOpen] = React.useState(false);
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   async function handleSignUp() {
     try {
-      const { user, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email: email,
         password: password,
       });
-      alert("Check your email for the login link!");
-      setSignUp(false);
-      onOpenChange(false);
+
+      if (error) {
+        if (error.message.includes("already registered")) {
+          setErrorMessage(
+            "This email is already registered. Please log in instead."
+          );
+        } else {
+          setErrorMessage(error.message);
+        }
+      } else {
+        alert("Check your email for the login link!");
+        setSignUp(false);
+        onOpenChange(false);
+      }
     } catch (error) {
       setErrorMessage(error.message);
     }
@@ -37,22 +55,75 @@ export default function Login({ session, setSession }) {
 
   async function handleLogin() {
     try {
-      const { user, error } = await supabase.auth.signInWithPassword({
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.signInWithPassword({
         email: email,
         password: password,
       });
 
-      onOpenChange(false);
+      if (error) {
+        setErrorMessage(error.message);
+      } else {
+        setSession(session);
+        onOpenChange(false);
+        console.log(session);
+      }
     } catch (error) {
       setErrorMessage(error.message);
     }
   }
+
+  async function handleSignOut() {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      setErrorMessage(error.message);
+    }
+  }
+
   return (
     <>
       {session ? (
-        <Button color="primary" onPress={() => setSession(null)}>
-          Log out
-        </Button>
+        <div className="profile-dropdown">
+          <Dropdown placement="bottom-start">
+            <DropdownTrigger>
+              <Avatar
+                as="button"
+                isBordered
+                src="https://i.pravatar.cc/150?u=a042581f4e29026024d"
+                className="transition-transform"
+                description="@tonyreichert"
+                name="Tony Reichert"
+              />
+            </DropdownTrigger>
+            <DropdownMenu aria-label="User Actions" variant="flat">
+              <DropdownItem
+                key="profile"
+                className="h-14 gap-2"
+                onClick={() => setIsProfileOpen(true)}
+              >
+                <p className="font-bold">{session.user.email}</p>
+                <p className="font-bold">View profile</p>
+              </DropdownItem>
+              <DropdownItem
+                key="logout"
+                color="danger"
+                className="text-danger"
+                onClick={handleSignOut}
+              >
+                Log Out
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+          <Profile
+            isProfileOpen={isProfileOpen}
+            setIsProfileOpen={setIsProfileOpen}
+            session={session}
+            setSession={setSession}
+          />
+        </div>
       ) : (
         <div>
           <Button onPress={onOpen} color="primary">
@@ -99,6 +170,7 @@ export default function Login({ session, setSession }) {
                     />
                     <div className="flex py-2 px-1 justify-between">
                       <Link
+                        size="sm"
                         color="foreground"
                         underline="always"
                         onPress={() => {

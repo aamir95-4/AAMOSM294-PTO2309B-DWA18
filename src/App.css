@@ -153,3 +153,12 @@
   display: flex;
   justify-content: center;
 }
+
+/* Profile modal */
+
+.avatar-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  gap: 10px;
+}

@@ -4,13 +4,22 @@ import "./App.css";
 import Header from "./components/Header";
 import MediaPlayer from "./components/MediaPlayer";
 import MainContent from "./components/MainContent";
-
+import { supabase } from "./components/database/supabase";
 function App() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [podcasts, setPodcasts] = React.useState([]);
   const [isPLaying, setIsPlaying] = React.useState(false);
   const [session, setSession] = React.useState(null);
 
+  React.useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+  }, []);
   /*
   Set loading to wait 3 seconds before showing the page
   */
