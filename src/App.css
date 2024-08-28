@@ -162,3 +162,18 @@
   flex-direction: row;
   gap: 10px;
 }
+
+/* Favourites Page */
+
+.favourites-title {
+  padding: 10px 0px 10px 20px;
+}
+
+.favourites-card {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 10px;
+  justify-content: center;
+  align-items: center;
+}

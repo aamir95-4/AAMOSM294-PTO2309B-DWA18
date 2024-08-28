@@ -4,12 +4,14 @@ import "./App.css";
 import Header from "./components/Header";
 import MediaPlayer from "./components/MediaPlayer";
 import MainContent from "./components/MainContent";
+import Favourites from "./components/Favourites";
 import { supabase } from "./components/database/supabase";
 function App() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [podcasts, setPodcasts] = React.useState([]);
   const [isPLaying, setIsPlaying] = React.useState(false);
   const [session, setSession] = React.useState(null);
+  const [page, setPage] = React.useState("home");
 
   React.useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -49,13 +51,16 @@ function App() {
 
   return (
     <>
-      <Header session={session} setSession={setSession} />
-      <MainContent
-        session={session}
-        podcasts={podcasts}
-        isPLaying={isPLaying}
-        setIsPlaying={setIsPlaying}
-      />
+      <Header session={session} setSession={setSession} setPage={setPage} />
+      {page === "home" && (
+        <MainContent
+          session={session}
+          podcasts={podcasts}
+          isPLaying={isPLaying}
+          setIsPlaying={setIsPlaying}
+        />
+      )}
+      {page === "favourites" && <Favourites session={session} />}
       {isPLaying && <MediaPlayer />}
     </>
   );

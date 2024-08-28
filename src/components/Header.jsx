@@ -12,7 +12,7 @@ import Login from "./Login.jsx";
 
 import PropTypes from "prop-types";
 
-export default function Header({ session, setSession }) {
+export default function Header({ session, setSession, setPage }) {
   return (
     <div>
       <Navbar>
@@ -30,15 +30,21 @@ export default function Header({ session, setSession }) {
         </NavbarContent>
         <NavbarMenu className="navbar-menu" height="20rem">
           <NavbarMenuItem>
-            <Link color="foreground" href="#">
-              Show All
+            <Link color="foreground" href="#" onPress={() => setPage("home")}>
+              Home
             </Link>
           </NavbarMenuItem>
-          <NavbarMenuItem>
-            <Link color="foreground" href="#">
-              Favourites
-            </Link>
-          </NavbarMenuItem>
+          {session && (
+            <NavbarMenuItem>
+              <Link
+                color="foreground"
+                href="#"
+                onPress={() => setPage("favourites")}
+              >
+                Favourites
+              </Link>
+            </NavbarMenuItem>
+          )}
         </NavbarMenu>
       </Navbar>
     </div>
@@ -48,49 +54,5 @@ export default function Header({ session, setSession }) {
 Header.propTypes = {
   session: PropTypes.object,
   setSession: PropTypes.func,
+  setPage: PropTypes.func,
 };
-
-// {!session && (
-//   <Button
-//     color="primary"
-//     className="login-button"
-//     onClick={handleLogInClick}
-//   >
-//     Log in
-//   </Button>
-// )}
-// {session && (
-//   <div className="profile-dropdown">
-//     <Dropdown placement="bottom-start">
-//       <DropdownTrigger>
-//         <Avatar
-//           as="button"
-//           avatarProps={{
-//             isBordered: true,
-//             src: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
-//           }}
-//           className="transition-transform"
-//           description="@tonyreichert"
-//           name="Tony Reichert"
-//         />
-//       </DropdownTrigger>
-//       <DropdownMenu aria-label="User Actions" variant="flat">
-//         <DropdownItem key="profile" className="h-14 gap-2">
-//           <p className="font-bold">Signed in as</p>
-//           <p className="font-bold">@tonyreichert</p>
-//         </DropdownItem>
-//         <DropdownItem key="clear-history">
-//           Clear Listening History
-//         </DropdownItem>
-//         <DropdownItem
-//           key="logout"
-//           color="danger"
-//           className="text-danger"
-//           onClick={handleLogOutClick}
-//         >
-//           Log Out
-//         </DropdownItem>
-//       </DropdownMenu>
-//     </Dropdown>
-//   </div>
-// )}

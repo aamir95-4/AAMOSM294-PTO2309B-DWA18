@@ -4,19 +4,6 @@ import {
   CardBody,
   Image,
   useDisclosure,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  ModalContent,
-  Button,
-  CircularProgress,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
-  Accordion,
-  AccordionItem,
 } from "@nextui-org/react";
 import moment from "moment";
 import Filters from "./Filters";
@@ -25,7 +12,7 @@ import genres from "./api/genres";
 import Hero from "./Hero";
 import Fuse from "fuse.js";
 import fetchSinglePodcast from "./api/fetchSinglePodcast";
-import { addFavorite, removeFavorite } from "./database/favourites";
+import ShowCard from "./ShowCard";
 import PropTypes from "prop-types";
 
 const getGenreTitles = (podcastGenres, allGenres) => {
@@ -205,98 +192,20 @@ export default function MainContent({
             </div>
           ))}
         </div>
-
-        <Modal
+        <ShowCard
           isOpen={isOpen}
           onOpenChange={onOpenChange}
-          scrollBehavior="inside"
-        >
-          {loading ? (
-            <CircularProgress className="page-loading" label="Loading..." />
-          ) : podcastData ? (
-            <>
-              <ModalContent>
-                <ModalHeader className="flex flex-col gap-1">
-                  {podcastData.title}
-                </ModalHeader>
-                <ModalBody>
-                  <small>
-                    {getGenreTitles(selectedPodcast.genres, genres)}
-                  </small>
-                  <small className="text-default-500">
-                    Seasons: {podcastData.seasons.length}
-                  </small>
-                  <Image
-                    alt="Card background"
-                    className="object-cover rounded-xl"
-                    src={podcastData.image}
-                    width={270}
-                  />
-                  <small className="text-default-500">
-                    {`Episodes: ${podcastData.seasons[selectedKeysArray].episodes.length}`}
-                  </small>
-
-                  <Accordion>
-                    {podcastData.seasons[selectedKeysArray].episodes.map(
-                      (episode, index) => (
-                        <AccordionItem
-                          key={index}
-                          aria-label={`Episode ${index}`}
-                          title={episode.title}
-                        >
-                          <Button
-                            color="primary"
-                            onClick={() => pauseEpisode()}
-                          >
-                            Pause
-                          </Button>
-
-                          <Button
-                            color="primary"
-                            onClick={() => playEpisode(episode.file)}
-                          >
-                            Play
-                          </Button>
-                        </AccordionItem>
-                      )
-                    )}
-                  </Accordion>
-                </ModalBody>
-                <ModalFooter>
-                  <Dropdown className="show-card-seasons">
-                    <DropdownTrigger variant="bordered">
-                      <Button>{`Season ${
-                        Number(selectedKeysArray) + 1
-                      }`}</Button>
-                    </DropdownTrigger>
-                    <DropdownMenu
-                      aria-label="Seasons"
-                      variant="flat"
-                      disallowEmptySelection
-                      selectionMode="single"
-                      selectedKeys={selectedKeys}
-                      onSelectionChange={setSelectedKeys}
-                    >
-                      {podcastData.seasons.map((season, index) => (
-                        <DropdownItem key={index}>
-                          {`Season ${index + 1}`}
-                        </DropdownItem>
-                      ))}
-                    </DropdownMenu>
-                  </Dropdown>
-                  <Button
-                    color="primary"
-                    onClick={() => addFavorite(session.user.id, podcastData.id)}
-                  >
-                    Favourite
-                  </Button>
-                </ModalFooter>
-              </ModalContent>
-            </>
-          ) : (
-            <p>Failed to load podcast details.</p>
-          )}
-        </Modal>
+          podcastData={podcastData}
+          loading={loading}
+          pauseEpisode={pauseEpisode}
+          playEpisode={playEpisode}
+          selectedKeysArray={selectedKeysArray}
+          selectedKeys={selectedKeys}
+          setSelectedKeys={setSelectedKeys}
+          getGenreTitles={getGenreTitles}
+          selectedPodcast={selectedPodcast}
+          session={session}
+        />
       </div>
     </>
   );

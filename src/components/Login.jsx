@@ -121,7 +121,6 @@ export default function Login({ session, setSession }) {
             isProfileOpen={isProfileOpen}
             setIsProfileOpen={setIsProfileOpen}
             session={session}
-            setSession={setSession}
           />
         </div>
       ) : (
