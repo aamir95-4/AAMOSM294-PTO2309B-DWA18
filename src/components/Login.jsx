@@ -18,6 +18,7 @@ import {
 } from "@nextui-org/react";
 import PropTypes from "prop-types";
 import Profile from "./Profile";
+import { createFavouritesTable } from "./database/favourites";
 
 export default function Login({ session, setSession }) {
   const [email, setEmail] = React.useState("");
@@ -45,7 +46,9 @@ export default function Login({ session, setSession }) {
         }
       } else {
         alert("Check your email for the login link!");
+        createFavouritesTable(session.user.id);
         setSignUp(false);
+
         onOpenChange(false);
       }
     } catch (error) {
@@ -68,7 +71,6 @@ export default function Login({ session, setSession }) {
       } else {
         setSession(session);
         onOpenChange(false);
-        console.log(session);
       }
     } catch (error) {
       setErrorMessage(error.message);

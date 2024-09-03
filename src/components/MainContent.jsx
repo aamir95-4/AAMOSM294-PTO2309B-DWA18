@@ -1,10 +1,4 @@
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  Image,
-  useDisclosure,
-} from "@nextui-org/react";
+import { useDisclosure, Tabs, Tab } from "@nextui-org/react";
 import moment from "moment";
 import Filters from "./Filters";
 import React from "react";
@@ -14,6 +8,8 @@ import Fuse from "fuse.js";
 import fetchSinglePodcast from "./api/fetchSinglePodcast";
 import ShowCard from "./ShowCard";
 import PropTypes from "prop-types";
+import Favourites from "./Favourites";
+import ShowAll from "./ShowAll";
 
 const getGenreTitles = (podcastGenres, allGenres) => {
   return podcastGenres
@@ -29,6 +25,7 @@ export default function MainContent({
   session,
   isPlaying,
   setIsPlaying,
+  userFavourites,
 }) {
   const [selectedPodcast, setSelectedPodcast] = React.useState(null);
   const [sortingOptions, setSortingOptions] = React.useState([]);
@@ -131,16 +128,6 @@ export default function MainContent({
     });
   }
 
-  function pauseEpisode() {
-    if (audioInstance) {
-      audioInstance.pause();
-      console.log("Episode paused.");
-      setIsPlaying(false);
-    } else {
-      console.log("No episode is currently playing.");
-    }
-  }
-
   return (
     <>
       <div>
@@ -158,46 +145,38 @@ export default function MainContent({
             podcasts={podcasts}
           />
         </div>
-        <div className="grid-container">
-          {filteredPodcasts.map((podcast) => (
-            <div className="grid-item" key={podcast.id}>
-              <Card
-                className="pod-card"
-                isPressable
-                onClick={() => handleCardClick(podcast)}
-              >
-                <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-                  <p className="text-tiny uppercase font-bold">
-                    {podcast.title}
-                  </p>
-                  <small className="text-default-500">
-                    Seasons: {podcast.seasons}
-                  </small>
-                  <small className="text-default-500">
-                    Updated: {moment(podcast.updated).format("D MMMM YYYY")}
-                  </small>
-                  <small className="text-default-500">
-                    {getGenreTitles(podcast.genres, genres)}
-                  </small>
-                </CardHeader>
-                <CardBody className="overflow-visible py-2">
-                  <Image
-                    alt={podcast.title}
-                    className="object-cover"
-                    src={podcast.image}
-                    width={270}
-                  />
-                </CardBody>
-              </Card>
-            </div>
-          ))}
+        <div className="Tabs">
+          <Tabs aria-label="menu" color="primary">
+            <Tab key="show all" title="Show All">
+              <ShowAll
+                handleCardClick={handleCardClick}
+                filteredPodcasts={filteredPodcasts}
+                getGenreTitles={getGenreTitles}
+                genres={genres}
+              />
+            </Tab>
+            {!session && (
+              <Tab isDisabled key="favourites" title="Favourites"></Tab>
+            )}
+
+            {session && (
+              <Tab key="favourites" title="Favourites">
+                <Favourites
+                  userFavourites={userFavourites || []}
+                  podcasts={podcasts}
+                  session={session}
+                  handleCardClick={handleCardClick}
+                />
+              </Tab>
+            )}
+          </Tabs>
         </div>
+
         <ShowCard
           isOpen={isOpen}
           onOpenChange={onOpenChange}
           podcastData={podcastData}
           loading={loading}
-          pauseEpisode={pauseEpisode}
           playEpisode={playEpisode}
           selectedKeysArray={selectedKeysArray}
           selectedKeys={selectedKeys}
@@ -205,6 +184,8 @@ export default function MainContent({
           getGenreTitles={getGenreTitles}
           selectedPodcast={selectedPodcast}
           session={session}
+          userFavourites={userFavourites}
+          isPlaying={isPlaying}
         />
       </div>
     </>
@@ -216,4 +197,5 @@ MainContent.propTypes = {
   session: PropTypes.object,
   isPlaying: PropTypes.bool,
   setIsPlaying: PropTypes.func,
+  userFavourites: PropTypes.array,
 };

@@ -62,10 +62,18 @@ export default function Filters({
             selectedKeys={sortingOptions}
             onSelectionChange={setSortingOptions}
           >
-            <DropdownItem key="A-Z">A-Z</DropdownItem>
-            <DropdownItem key="Z-A">Z-A</DropdownItem>
-            <DropdownItem key="Newest">Newest</DropdownItem>
-            <DropdownItem key="Oldest">Oldest</DropdownItem>
+            <DropdownItem key="A-Z" textValue="A-Z">
+              A-Z
+            </DropdownItem>
+            <DropdownItem key="Z-A" textValue="Z-A">
+              Z-A
+            </DropdownItem>
+            <DropdownItem key="Newest " textValue="Newest">
+              Newest
+            </DropdownItem>
+            <DropdownItem key="Oldest" textValue="Oldest">
+              Oldest
+            </DropdownItem>
           </DropdownMenu>
         </Dropdown>
         <Button

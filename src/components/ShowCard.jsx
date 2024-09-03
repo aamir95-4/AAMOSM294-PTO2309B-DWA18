@@ -13,19 +13,23 @@ import {
   DropdownItem,
   Accordion,
   AccordionItem,
+  Progress,
 } from "@nextui-org/react";
 import genres from "./api/genres";
-import { addFavorite, removeFavorite } from "./database/favourites";
+import {
+  addFavourite,
+  removeFavourite,
+  isFavourite,
+} from "./database/favourites";
 import PropTypes from "prop-types";
 import { IconContext } from "react-icons";
-import { BiStar, BiSolidStar } from "react-icons/bi";
+import { BiStar, BiSolidStar, BiPlay, BiPause } from "react-icons/bi";
 
 export default function ShowCard({
   isOpen,
   onOpenChange,
   podcastData,
   loading,
-  pauseEpisode,
   playEpisode,
   selectedKeysArray,
   selectedKeys,
@@ -33,6 +37,8 @@ export default function ShowCard({
   getGenreTitles,
   selectedPodcast,
   session,
+  userFavourites,
+  isPlaying,
 }) {
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior="inside">
@@ -66,17 +72,63 @@ export default function ShowCard({
                       key={index}
                       aria-label={`Episode ${index}`}
                       title={episode.title}
+                      subtitle={`Episode ${index + 1}`}
                     >
-                      <Button color="primary" onClick={() => pauseEpisode()}>
-                        Pause
-                      </Button>
+                      {isPlaying ? (
+                        <button
+                          className="controlButton"
+                          onClick={pauseEpisode}
+                        >
+                          <IconContext.Provider
+                            value={{ color: "black", size: "2em" }}
+                          >
+                            <BiPause />
+                          </IconContext.Provider>
+                        </button>
+                      ) : (
+                        <button
+                          className="controlButton"
+                          onClick={() => playEpisode(episode.file)}
+                        >
+                          <IconContext.Provider
+                            value={{ color: "black", size: "2em" }}
+                          >
+                            <BiPlay />
+                          </IconContext.Provider>
+                        </button>
+                      )}
 
-                      <Button
-                        color="primary"
-                        onClick={() => playEpisode(episode.file)}
-                      >
-                        Play
-                      </Button>
+                      {isFavourite(userFavourites, episode.title) ? (
+                        <button
+                          onClick={() =>
+                            removeFavourite(session.user.id, episode.title)
+                          }
+                        >
+                          <IconContext.Provider
+                            value={{
+                              size: "1.5em",
+                            }}
+                          >
+                            <BiSolidStar />
+                          </IconContext.Provider>
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() =>
+                            addFavourite(session.user.id, episode.title)
+                          }
+                        >
+                          <IconContext.Provider
+                            value={{
+                              size: "1.5em",
+                            }}
+                          >
+                            <BiStar />
+                          </IconContext.Provider>
+                        </button>
+                      )}
+
+                      <Progress size="sm" value={episode.progress} />
                     </AccordionItem>
                   )
                 )}
@@ -102,15 +154,6 @@ export default function ShowCard({
                   ))}
                 </DropdownMenu>
               </Dropdown>
-              <Button
-                color="defuault"
-                isIconOnly
-                onClick={() => addFavorite(session.user.id, podcastData.id)}
-              >
-                <IconContext.Provider value={{ color: "black", size: "1em" }}>
-                  <BiStar /> <BiSolidStar />
-                </IconContext.Provider>
-              </Button>
             </ModalFooter>
           </ModalContent>
         </>
@@ -124,14 +167,15 @@ export default function ShowCard({
 ShowCard.propTypes = {
   podcastData: PropTypes.object,
   loading: PropTypes.bool,
-  pauseEpisode: PropTypes.func,
   playEpisode: PropTypes.func,
-  selectedKeysArray: PropTypes.number,
-  selectedKeys: PropTypes.array,
+  selectedKeysArray: PropTypes.array,
+  selectedKeys: PropTypes.object,
   setSelectedKeys: PropTypes.func,
   getGenreTitles: PropTypes.func,
   selectedPodcast: PropTypes.object,
   isOpen: PropTypes.bool,
   onOpenChange: PropTypes.func,
   session: PropTypes.object,
+  userFavourites: PropTypes.array,
+  isPlaying: PropTypes.bool,
 };

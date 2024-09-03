@@ -165,15 +165,31 @@
 
 /* Favourites Page */
 
-.favourites-title {
+.page-title {
   padding: 10px 0px 10px 20px;
 }
 
-.favourites-card {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+.favourites-container {
+  display: flex;
+  flex-direction: column;
   gap: 20px;
   padding: 10px;
+}
+
+.favourites-card {
+  display: flex;
   justify-content: center;
   align-items: center;
+  height: 10rem;
+  max-height: 15rem;
+}
+
+/* Footer */
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: end;
+  height: 5rem;
+  padding: 20px;
 }

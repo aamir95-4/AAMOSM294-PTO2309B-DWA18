@@ -4,22 +4,36 @@ import "./App.css";
 import Header from "./components/Header";
 import MediaPlayer from "./components/MediaPlayer";
 import MainContent from "./components/MainContent";
-import Favourites from "./components/Favourites";
+import Footer from "./components/Footer";
 import { supabase } from "./components/database/supabase";
+import { fetchFavourites } from "./components/database/favourites";
 function App() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [podcasts, setPodcasts] = React.useState([]);
   const [isPLaying, setIsPlaying] = React.useState(false);
   const [session, setSession] = React.useState(null);
-  const [page, setPage] = React.useState("home");
+  const [userFavourites, setUserFavourites] = React.useState([]);
 
   React.useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
+    const storedSession = localStorage.getItem("supabaseSession");
+    if (storedSession) {
+      setSession(JSON.parse(storedSession));
+    } else {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) {
+          setSession(session);
+          localStorage.setItem("supabaseSession", JSON.stringify(session));
+        }
+      });
+    }
 
     supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+      if (session) {
+        localStorage.setItem("supabaseSession", JSON.stringify(session));
+      } else {
+        localStorage.removeItem("supabaseSession");
+      }
     });
   }, []);
   /*
@@ -28,13 +42,26 @@ function App() {
   React.useEffect(() => {
     setTimeout(() => {
       setIsLoading(false);
-    }, 3000);
+    }, 2000);
   }, []);
+
+  React.useEffect(() => {
+    if (session) {
+      fetchFavourites(session.user.id).then((data) => {
+        setUserFavourites(data);
+      });
+    }
+  }, [session, userFavourites]);
 
   React.useEffect(() => {
     const fetchPodcasts = async () => {
       try {
         const response = await fetch("https://podcast-api.netlify.app/shows");
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
         setPodcasts(data);
       } catch (error) {
@@ -45,23 +72,22 @@ function App() {
     fetchPodcasts();
   }, []);
 
-  // if (isLoading) {
-  //   return <CircularProgress className="page-loading" label="Loading..." />;
-  // }
+  if (isLoading) {
+    return <CircularProgress className="page-loading" label="Loading..." />;
+  }
 
   return (
     <>
-      <Header session={session} setSession={setSession} setPage={setPage} />
-      {page === "home" && (
-        <MainContent
-          session={session}
-          podcasts={podcasts}
-          isPLaying={isPLaying}
-          setIsPlaying={setIsPlaying}
-        />
-      )}
-      {page === "favourites" && <Favourites session={session} />}
+      <Header session={session} setSession={setSession} />
+      <MainContent
+        session={session}
+        podcasts={podcasts}
+        isPLaying={isPLaying}
+        setIsPlaying={setIsPlaying}
+        userFavourites={userFavourites}
+      />
       {isPLaying && <MediaPlayer />}
+      <Footer />
     </>
   );
 }

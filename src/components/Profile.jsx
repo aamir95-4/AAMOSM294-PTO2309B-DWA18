@@ -71,6 +71,7 @@ export default function Profile({ isProfileOpen, setIsProfileOpen, session }) {
       <Modal
         isOpen={isProfileOpen}
         onOpenChange={(open) => setIsProfileOpen(open)}
+        className="profile-modal"
       >
         <ModalContent>
           {(onClose) => (
