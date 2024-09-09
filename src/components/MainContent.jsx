@@ -10,6 +10,7 @@ import ShowCard from "./ShowCard";
 import PropTypes from "prop-types";
 import Favourites from "./Favourites";
 import ShowAll from "./ShowAll";
+import MediaPlayer from "./MediaPlayer";
 
 const getGenreTitles = (podcastGenres, allGenres) => {
   return podcastGenres
@@ -23,9 +24,12 @@ const getGenreTitles = (podcastGenres, allGenres) => {
 export default function MainContent({
   podcasts,
   session,
-  isPlaying,
-  setIsPlaying,
+  isPlayerOpen,
+  setIsPlayerOpen,
   userFavourites,
+  episodePlaying,
+  setEpisodePlaying,
+  setFavouritesUpdated,
 }) {
   const [selectedPodcast, setSelectedPodcast] = React.useState(null);
   const [sortingOptions, setSortingOptions] = React.useState([]);
@@ -110,24 +114,6 @@ export default function MainContent({
     }
   };
 
-  let audioInstance = null;
-
-  function playEpisode(fileUrl) {
-    if (audioInstance) {
-      audioInstance.pause();
-    }
-    audioInstance = new Audio(fileUrl);
-    audioInstance.play();
-
-    setIsPlaying(true);
-
-    audioInstance.addEventListener("ended", () => {
-      console.log("Episode finished playing.");
-      setIsPlaying(false);
-      audioInstance = null;
-    });
-  }
-
   return (
     <>
       <div>
@@ -177,7 +163,6 @@ export default function MainContent({
           onOpenChange={onOpenChange}
           podcastData={podcastData}
           loading={loading}
-          playEpisode={playEpisode}
           selectedKeysArray={selectedKeysArray}
           selectedKeys={selectedKeys}
           setSelectedKeys={setSelectedKeys}
@@ -185,8 +170,19 @@ export default function MainContent({
           selectedPodcast={selectedPodcast}
           session={session}
           userFavourites={userFavourites}
-          isPlaying={isPlaying}
+          setIsPlayerOpen={setIsPlayerOpen}
+          setEpisodePlaying={setEpisodePlaying}
+          setFavouritesUpdated={setFavouritesUpdated}
         />
+        {episodePlaying.episodeTitle === "" ? null : (
+          <MediaPlayer
+            isPlayerOpen={isPlayerOpen}
+            setIsPlayerOpen={setIsPlayerOpen}
+            episodePlaying={episodePlaying}
+            setEpisodePlaying={setEpisodePlaying}
+            podcastData={podcastData}
+          />
+        )}
       </div>
     </>
   );
@@ -195,7 +191,10 @@ export default function MainContent({
 MainContent.propTypes = {
   podcasts: PropTypes.array,
   session: PropTypes.object,
-  isPlaying: PropTypes.bool,
-  setIsPlaying: PropTypes.func,
+  isPlayerOpen: PropTypes.bool,
+  setIsPlayerOpen: PropTypes.func,
   userFavourites: PropTypes.array,
+  episodePlaying: PropTypes.object,
+  setEpisodePlaying: PropTypes.func,
+  setFavouritesUpdated: PropTypes.func,
 };

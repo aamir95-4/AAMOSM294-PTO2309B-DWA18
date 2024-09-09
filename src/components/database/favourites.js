@@ -18,7 +18,11 @@ export const createFavouritesTable = async (userId) => {
   return data;
 };
 
-export const addFavourite = async (userId, newPodcast) => {
+export const addFavourite = async (
+  userId,
+  newPodcast,
+  setFavouritesUpdated
+) => {
   const { data, error } = await supabase
     .from("favourites")
     .select("podcastarray")
@@ -52,9 +56,15 @@ export const addFavourite = async (userId, newPodcast) => {
   } else {
     console.log("Podcast added to favorites:", updateData);
   }
+
+  setFavouritesUpdated(true);
 };
 
-export const removeFavourite = async (userId, podcastId) => {
+export const removeFavourite = async (
+  userId,
+  podcastId,
+  setFavouritesUpdated
+) => {
   const { data, error } = await supabase
     .from("favourites")
     .select("podcastarray")
@@ -88,6 +98,8 @@ export const removeFavourite = async (userId, podcastId) => {
   } else {
     console.log("Podcast removed from favorites:", updateData);
   }
+
+  setFavouritesUpdated(true);
 };
 
 export const isFavourite = (userFavourites, podcastTitle) => {

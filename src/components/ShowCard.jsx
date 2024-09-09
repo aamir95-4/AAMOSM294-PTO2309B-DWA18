@@ -23,14 +23,13 @@ import {
 } from "./database/favourites";
 import PropTypes from "prop-types";
 import { IconContext } from "react-icons";
-import { BiStar, BiSolidStar, BiPlay, BiPause } from "react-icons/bi";
+import { BiStar, BiSolidStar } from "react-icons/bi";
 
 export default function ShowCard({
   isOpen,
   onOpenChange,
   podcastData,
   loading,
-  playEpisode,
   selectedKeysArray,
   selectedKeys,
   setSelectedKeys,
@@ -38,10 +37,29 @@ export default function ShowCard({
   selectedPodcast,
   session,
   userFavourites,
-  isPlaying,
+  setIsPlayerOpen,
+  setEpisodePlaying,
+  setFavouritesUpdated,
 }) {
+  const playEpisode = (id, show, season, episode, episodeFile) => {
+    setEpisodePlaying({
+      podcastId: id,
+      podcastTitle: show,
+      season: season,
+      episodeTitle: episode,
+      episodeFile: episodeFile,
+    });
+    setIsPlayerOpen(true);
+  };
+
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior="inside">
+    <Modal
+      aria-labelledby="modal-title"
+      aria-describedby="modal-description"
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      scrollBehavior="inside"
+    >
       {loading ? (
         <CircularProgress className="page-loading" label="Loading..." />
       ) : podcastData ? (
@@ -70,65 +88,73 @@ export default function ShowCard({
                   (episode, index) => (
                     <AccordionItem
                       key={index}
-                      aria-label={`Episode ${index}`}
+                      aria-label={`Episode ${index}: ${episode.title}`}
                       title={episode.title}
                       subtitle={`Episode ${index + 1}`}
                     >
-                      {isPlaying ? (
-                        <button
+                      <div className="episode-actions">
+                        <Button
+                          aria-label={`Play episode: ${episode.title}`}
+                          size="sm"
                           className="controlButton"
-                          onClick={pauseEpisode}
-                        >
-                          <IconContext.Provider
-                            value={{ color: "black", size: "2em" }}
-                          >
-                            <BiPause />
-                          </IconContext.Provider>
-                        </button>
-                      ) : (
-                        <button
-                          className="controlButton"
-                          onClick={() => playEpisode(episode.file)}
-                        >
-                          <IconContext.Provider
-                            value={{ color: "black", size: "2em" }}
-                          >
-                            <BiPlay />
-                          </IconContext.Provider>
-                        </button>
-                      )}
-
-                      {isFavourite(userFavourites, episode.title) ? (
-                        <button
                           onClick={() =>
-                            removeFavourite(session.user.id, episode.title)
+                            playEpisode(
+                              podcastData.id,
+                              podcastData.title,
+                              selectedKeysArray,
+                              episode.title,
+                              episode.file
+                            )
                           }
                         >
-                          <IconContext.Provider
-                            value={{
-                              size: "1.5em",
-                            }}
+                          Listen Now
+                        </Button>
+                        {isFavourite(userFavourites, episode.title) ? (
+                          <button
+                            aria-label={`Remove ${episode.title} from favourites`}
+                            onClick={() =>
+                              removeFavourite(
+                                session.user.id,
+                                episode.title,
+                                setFavouritesUpdated
+                              )
+                            }
                           >
-                            <BiSolidStar />
-                          </IconContext.Provider>
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() =>
-                            addFavourite(session.user.id, episode.title)
-                          }
-                        >
-                          <IconContext.Provider
-                            value={{
-                              size: "1.5em",
-                            }}
+                            <IconContext.Provider
+                              value={{
+                                size: "1.5em",
+                              }}
+                            >
+                              <BiSolidStar />
+                            </IconContext.Provider>
+                          </button>
+                        ) : (
+                          <button
+                            aria-label={`Add ${episode.title} to favourites`}
+                            onClick={() =>
+                              addFavourite(
+                                session.user.id,
+                                episode.title,
+                                setFavouritesUpdated
+                              )
+                            }
                           >
-                            <BiStar />
-                          </IconContext.Provider>
-                        </button>
-                      )}
+                            <IconContext.Provider
+                              value={{
+                                size: "1.5em",
+                              }}
+                            >
+                              <BiStar />
+                            </IconContext.Provider>
+                          </button>
+                        )}
+                      </div>
 
-                      <Progress size="sm" value={episode.progress} />
+                      <Progress
+                        aria-label={`Progress for episode ${episode.title}: ${episode.progress}%`}
+                        size="sm"
+                        value={episode.progress}
+                      />
                     </AccordionItem>
                   )
                 )}
@@ -140,7 +166,9 @@ export default function ShowCard({
                   <Button>{`Season ${Number(selectedKeysArray) + 1}`}</Button>
                 </DropdownTrigger>
                 <DropdownMenu
-                  aria-label="Seasons"
+                  aria-label={`Select season (Currently Season ${
+                    Number(selectedKeysArray) + 1
+                  })`}
                   variant="flat"
                   disallowEmptySelection
                   selectionMode="single"
@@ -148,7 +176,10 @@ export default function ShowCard({
                   onSelectionChange={setSelectedKeys}
                 >
                   {podcastData.seasons.map((season, index) => (
-                    <DropdownItem key={index}>
+                    <DropdownItem
+                      key={index}
+                      aria-label={`Season ${index + 1}`}
+                    >
                       {`Season ${index + 1}`}
                     </DropdownItem>
                   ))}
@@ -177,5 +208,7 @@ ShowCard.propTypes = {
   onOpenChange: PropTypes.func,
   session: PropTypes.object,
   userFavourites: PropTypes.array,
-  isPlaying: PropTypes.bool,
+  setIsPlayerOpen: PropTypes.func,
+  setEpisodePlaying: PropTypes.func,
+  setFavouritesUpdated: PropTypes.func,
 };

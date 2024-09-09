@@ -9,7 +9,3 @@ Main Content
 Media Player: Open and close + add functionality
 
 Playback functionality: remembering completed episodes and progress through an episode, ability to play episodes only when logged in. When a user tries to play an episode it should prompt them to sign in/up.
-
-Favourites page/functionality:
-To build page out, Show title, season, favourited episodes.
-how to store favourites add and remove functionality.

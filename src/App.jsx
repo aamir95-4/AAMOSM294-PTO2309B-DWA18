@@ -2,7 +2,6 @@ import React from "react";
 import { CircularProgress } from "@nextui-org/react";
 import "./App.css";
 import Header from "./components/Header";
-import MediaPlayer from "./components/MediaPlayer";
 import MainContent from "./components/MainContent";
 import Footer from "./components/Footer";
 import { supabase } from "./components/database/supabase";
@@ -10,9 +9,17 @@ import { fetchFavourites } from "./components/database/favourites";
 function App() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [podcasts, setPodcasts] = React.useState([]);
-  const [isPLaying, setIsPlaying] = React.useState(false);
+  const [isplayerOpen, setIsPlayerOpen] = React.useState(false);
   const [session, setSession] = React.useState(null);
   const [userFavourites, setUserFavourites] = React.useState([]);
+  const [favouritesUpdated, setFavouritesUpdated] = React.useState(false);
+  const [episodePlaying, setEpisodePlaying] = React.useState({
+    podcastId: "",
+    podcastTitle: "",
+    seasonNumber: "",
+    episodeTitle: "",
+    episodeFile: "",
+  });
 
   React.useEffect(() => {
     const storedSession = localStorage.getItem("supabaseSession");
@@ -42,16 +49,17 @@ function App() {
   React.useEffect(() => {
     setTimeout(() => {
       setIsLoading(false);
-    }, 2000);
+    }, 1000);
   }, []);
 
   React.useEffect(() => {
     if (session) {
       fetchFavourites(session.user.id).then((data) => {
         setUserFavourites(data);
+        setFavouritesUpdated(false);
       });
     }
-  }, [session, userFavourites]);
+  }, [session, favouritesUpdated]);
 
   React.useEffect(() => {
     const fetchPodcasts = async () => {
@@ -82,11 +90,14 @@ function App() {
       <MainContent
         session={session}
         podcasts={podcasts}
-        isPLaying={isPLaying}
-        setIsPlaying={setIsPlaying}
+        isPlayerOpen={isplayerOpen}
+        setIsPlayerOpen={setIsPlayerOpen}
         userFavourites={userFavourites}
+        episodePlaying={episodePlaying}
+        setEpisodePlaying={setEpisodePlaying}
+        setFavouritesUpdated={setFavouritesUpdated}
       />
-      {isPLaying && <MediaPlayer />}
+
       <Footer />
     </>
   );
