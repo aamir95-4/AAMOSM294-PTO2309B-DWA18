@@ -152,6 +152,9 @@ export default function MainContent({
                   podcasts={podcasts}
                   session={session}
                   handleCardClick={handleCardClick}
+                  setIsPlayerOpen={setIsPlayerOpen}
+                  setEpisodePlaying={setEpisodePlaying}
+                  setFavouritesUpdated={setFavouritesUpdated}
                 />
               </Tab>
             )}
@@ -179,8 +182,6 @@ export default function MainContent({
             isPlayerOpen={isPlayerOpen}
             setIsPlayerOpen={setIsPlayerOpen}
             episodePlaying={episodePlaying}
-            setEpisodePlaying={setEpisodePlaying}
-            podcastData={podcastData}
           />
         )}
       </div>

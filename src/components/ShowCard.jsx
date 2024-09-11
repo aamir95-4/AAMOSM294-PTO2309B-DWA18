@@ -45,7 +45,7 @@ export default function ShowCard({
     setEpisodePlaying({
       podcastId: id,
       podcastTitle: show,
-      season: season,
+      seasonNumber: season,
       episodeTitle: episode,
       episodeFile: episodeFile,
     });

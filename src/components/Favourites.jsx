@@ -9,16 +9,21 @@ import {
   Accordion,
   AccordionItem,
   CircularProgress,
+  Button,
 } from "@nextui-org/react";
 import fetchSinglePodcast from "./api/fetchSinglePodcast";
 import React from "react";
 import PropTypes from "prop-types";
+import { removeFavourite } from "./database/favourites";
 
 export default function Favourites({
   session,
   podcasts,
   userFavourites,
   handleCardClick,
+  setIsPlayerOpen,
+  setEpisodePlaying,
+  setFavouritesUpdated,
 }) {
   const [favouritePodcastShows, setFavouritePodcastShows] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
@@ -59,6 +64,17 @@ export default function Favourites({
 
     fetchData();
   }, [podcasts, userFavourites, episodeTitlesSet]);
+
+  const playEpisode = (id, show, season, episode, episodeFile) => {
+    setEpisodePlaying({
+      podcastId: id,
+      podcastTitle: show,
+      seasonNumber: season,
+      episodeTitle: episode,
+      episodeFile: episodeFile,
+    });
+    setIsPlayerOpen(true);
+  };
 
   if (loading)
     return <CircularProgress className="page-loading" label="Loading..." />;
@@ -115,8 +131,38 @@ export default function Favourites({
                               aria-label={`Episode ${episodeIndex + 1}`}
                               title={episode.title}
                             >
-                              {/* Add player or details for each episode */}
-                              Play, pause, progress
+                              <div className="favourites-buttons">
+                                <Button
+                                  aria-label={`Play episode: ${episode.title}`}
+                                  size="sm"
+                                  color="primary"
+                                  onClick={() =>
+                                    playEpisode(
+                                      podcast.id,
+                                      podcast.title,
+                                      seasonIndex + 1,
+                                      episode.title,
+                                      episode.file
+                                    )
+                                  }
+                                >
+                                  Listen Now
+                                </Button>
+                                <Button
+                                  aria-label={`Remove ${episode.title} from favourites`}
+                                  size="sm"
+                                  color="danger"
+                                  onClick={() =>
+                                    removeFavourite(
+                                      session.user.id,
+                                      episode.title,
+                                      setFavouritesUpdated
+                                    )
+                                  }
+                                >
+                                  Remove From Favourites
+                                </Button>
+                              </div>
                             </AccordionItem>
                           ))}
                         </Accordion>
@@ -144,4 +190,7 @@ Favourites.propTypes = {
   podcasts: PropTypes.array.isRequired,
   userFavourites: PropTypes.array,
   handleCardClick: PropTypes.func,
+  setIsPlayerOpen: PropTypes.func,
+  setEpisodePlaying: PropTypes.func,
+  setFavouritesUpdated: PropTypes.func,
 };

@@ -1,11 +1,9 @@
 Filters
-To update filters to work correctly. The filters need to work together. Favourites to only show when logged in, and favourites should be searchable/filterable.
+Work on filtering show all and favourites.
 
 Header
-Profile: functionality, upload avatar clear listening history
-header avatar to match profile avatar
+Clear listening history.
+If time, avatar functionality
 
-Main Content
-Media Player: Open and close + add functionality
-
-Playback functionality: remembering completed episodes and progress through an episode, ability to play episodes only when logged in. When a user tries to play an episode it should prompt them to sign in/up.
+Main
+Progress functionality
