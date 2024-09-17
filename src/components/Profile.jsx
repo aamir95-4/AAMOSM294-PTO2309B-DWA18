@@ -14,6 +14,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { IconContext } from "react-icons";
 import { BiUpload } from "react-icons/bi";
+import { clearProgress } from "./database/progress";
 
 export default function Profile({ isProfileOpen, setIsProfileOpen, session }) {
   const [uploading, setUploading] = React.useState(false);
@@ -107,7 +108,11 @@ export default function Profile({ isProfileOpen, setIsProfileOpen, session }) {
                     </Button>
                   </label>
                 </div>
-                <Link size="sm" href="#">
+                <Link
+                  size="sm"
+                  href="#"
+                  onPress={() => clearProgress(session.user.id)}
+                >
                   Clear Listening History
                 </Link>
               </ModalBody>

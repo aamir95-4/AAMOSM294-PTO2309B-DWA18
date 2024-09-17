@@ -50,8 +50,9 @@ export default function MainContent({
     keys: ["title"],
   });
 
-  const applyFilters = () => {
-    let filtered = podcasts;
+  const applyFilters = React.useCallback(() => {
+    let filtered = [...podcasts];
+
     const selectedGenresArray = Array.from(selectedGenres).map(Number);
 
     if (selectedGenresArray.length > 0) {
@@ -63,7 +64,7 @@ export default function MainContent({
     }
 
     if (sortingOptions) {
-      filtered = filtered.sort((a, b) => {
+      filtered.sort((a, b) => {
         if (sortingOptions === "Newest") {
           return moment(b.updated).diff(moment(a.updated));
         } else if (sortingOptions === "Oldest") {
@@ -72,9 +73,8 @@ export default function MainContent({
           return a.title.localeCompare(b.title);
         } else if (sortingOptions === "Z-A") {
           return b.title.localeCompare(a.title);
-        } else if (sortingOptions === "") {
-          return;
         }
+        return 0;
       });
     }
 
@@ -84,11 +84,11 @@ export default function MainContent({
     }
 
     setFilteredPodcasts(filtered);
-  };
+  }, [podcasts, selectedGenres, sortingOptions, searchTerm]);
 
   React.useEffect(() => {
     applyFilters();
-  }, [searchTerm, selectedGenres, sortingOptions, podcasts]);
+  }, [applyFilters]);
 
   React.useEffect(() => {
     if (searchTerm !== "") {
@@ -143,23 +143,19 @@ export default function MainContent({
                 genres={genres}
               />
             </Tab>
-            {!session && (
-              <Tab isDisabled key="favourites" title="Favourites"></Tab>
-            )}
 
-            {session && (
-              <Tab key="favourites" title="Favourites">
-                <Favourites
-                  userFavourites={userFavourites || []}
-                  podcasts={podcasts}
-                  session={session}
-                  handleCardClick={handleCardClick}
-                  setIsPlayerOpen={setIsPlayerOpen}
-                  setEpisodePlaying={setEpisodePlaying}
-                  setFavouritesUpdated={setFavouritesUpdated}
-                />
-              </Tab>
-            )}
+            <Tab key="favourites" title="Favourites">
+              <Favourites
+                userFavourites={userFavourites || []}
+                podcasts={podcasts}
+                session={session}
+                handleCardClick={handleCardClick}
+                setIsPlayerOpen={setIsPlayerOpen}
+                setEpisodePlaying={setEpisodePlaying}
+                setFavouritesUpdated={setFavouritesUpdated}
+                sortingOptions={sortingOptions}
+              />
+            </Tab>
           </Tabs>
         </div>
 
