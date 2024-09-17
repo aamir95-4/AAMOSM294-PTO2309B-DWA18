@@ -1,11 +1,4 @@
-import {
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
-  Button,
-  Input,
-} from "@nextui-org/react";
+import { Select, SelectItem, Button, Input } from "@nextui-org/react";
 import genres from "./api/genres";
 import PropTypes from "prop-types";
 
@@ -17,9 +10,20 @@ export default function Filters({
   searchTerm,
   setSearchTerm,
 }) {
+  const sortFilters = [
+    { key: "A-Z", label: "A-Z" },
+    { key: "Z-A", label: "Z-A" },
+    { key: "Newest", label: "Newest" },
+    { key: "Oldest", label: "Oldest" },
+  ];
+
+  const handleSortChange = (e) => {
+    setSortingOptions(e.target.value);
+  };
+
   return (
     <div className="filters-container">
-      <div className="filters-item-one">
+      <div className="filters-search">
         <Input
           className="search-bar"
           bordered
@@ -30,52 +34,32 @@ export default function Filters({
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
-      <div className="filters-item-two">
-        <Dropdown className="genres">
-          <DropdownTrigger>
-            <Button color="default" variant="bordered">
-              Genres
-            </Button>
-          </DropdownTrigger>
-          <DropdownMenu
-            aria-label="genres"
-            selectionMode="multiple"
-            items={genres}
-            closeOnSelect={false}
-            selectedKeys={selectedGenres}
-            onSelectionChange={setSelectedGenres}
-          >
-            {(item) => <DropdownItem key={item.id}>{item.title}</DropdownItem>}
-          </DropdownMenu>
-        </Dropdown>
+      <div className="filter-options">
+        <Select
+          className="genre-select"
+          items={genres}
+          label="Genres"
+          selectionMode="multiple"
+          aria-label="genres"
+          size="sm"
+          selectedKeys={selectedGenres}
+          onSelectionChange={setSelectedGenres}
+        >
+          {(item) => <SelectItem key={item.id}>{item.title}</SelectItem>}
+        </Select>
 
-        <Dropdown className="sorting">
-          <DropdownTrigger>
-            <Button color="default" variant="bordered" className="capitalize">
-              Sort
-            </Button>
-          </DropdownTrigger>
-          <DropdownMenu
-            aria-label="sorting selection"
-            variant="flat"
-            selectionMode="single"
-            selectedKeys={sortingOptions}
-            onSelectionChange={setSortingOptions}
-          >
-            <DropdownItem key="A-Z" textValue="A-Z">
-              A-Z
-            </DropdownItem>
-            <DropdownItem key="Z-A" textValue="Z-A">
-              Z-A
-            </DropdownItem>
-            <DropdownItem key="Newest " textValue="Newest">
-              Newest
-            </DropdownItem>
-            <DropdownItem key="Oldest" textValue="Oldest">
-              Oldest
-            </DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
+        <Select
+          className="sorting-select"
+          label="Sort"
+          selectedKeys={[sortingOptions]}
+          onChange={handleSortChange}
+          aria-label="sort"
+          size="sm"
+          items={sortFilters}
+        >
+          {(item) => <SelectItem key={item.key}>{item.label}</SelectItem>}
+        </Select>
+
         <Button
           color="default"
           variant="light"
@@ -83,7 +67,7 @@ export default function Filters({
           onClick={() => {
             setSearchTerm("");
             setSelectedGenres([]);
-            setSortingOptions([]);
+            setSortingOptions("");
           }}
         >
           Clear
@@ -96,9 +80,8 @@ export default function Filters({
 Filters.propTypes = {
   selectedGenres: PropTypes.array,
   setSelectedGenres: PropTypes.func,
-  sortingOptions: PropTypes.array,
+  sortingOptions: PropTypes.string,
   setSortingOptions: PropTypes.func,
   searchTerm: PropTypes.string,
   setSearchTerm: PropTypes.func,
-  podcasts: PropTypes.array,
 };

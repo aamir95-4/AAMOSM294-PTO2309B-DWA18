@@ -127,25 +127,31 @@
 .filters-container {
   display: flex;
   padding: 0px 20px 20px 20px;
-  align-items: center;
   justify-content: space-between;
 }
 
-.filters-item-one {
-  display: flex;
+.filters-search {
   gap: 20px;
   padding: 5px;
+  width: 10rem;
 }
 
-.filters-item-two {
-  display: flex;
-  gap: 10px;
+.genre-select {
+  height: 2rem;
+  max-width: 10rem;
   padding: 5px;
 }
 
-@media (max-width: 768px) {
+.sorting-select {
+  padding: 5px;
+  height: 2rem;
+  max-width: 10rem;
+}
+
+@media (max-width: 500px) {
   .filters-container {
     flex-direction: column;
+    align-items: center;
   }
 }
 

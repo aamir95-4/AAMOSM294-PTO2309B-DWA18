@@ -30,9 +30,11 @@ export default function MainContent({
   episodePlaying,
   setEpisodePlaying,
   setFavouritesUpdated,
+  showProgress,
+  setProgressUpdated,
 }) {
   const [selectedPodcast, setSelectedPodcast] = React.useState(null);
-  const [sortingOptions, setSortingOptions] = React.useState([]);
+  const [sortingOptions, setSortingOptions] = React.useState("");
   const [selectedGenres, setSelectedGenres] = React.useState([]);
   const [searchTerm, setSearchTerm] = React.useState("");
   const [filteredPodcasts, setFilteredPodcasts] = React.useState(podcasts);
@@ -51,7 +53,6 @@ export default function MainContent({
   const applyFilters = () => {
     let filtered = podcasts;
     const selectedGenresArray = Array.from(selectedGenres).map(Number);
-    const sortingOptionsArray = Array.from(sortingOptions);
 
     if (selectedGenresArray.length > 0) {
       filtered = filtered.filter((podcast) =>
@@ -61,18 +62,19 @@ export default function MainContent({
       );
     }
 
-    if (sortingOptionsArray.length > 0) {
+    if (sortingOptions) {
       filtered = filtered.sort((a, b) => {
-        if (sortingOptionsArray[0] === "Newest") {
+        if (sortingOptions === "Newest") {
           return moment(b.updated).diff(moment(a.updated));
-        } else if (sortingOptionsArray[0] === "Oldest") {
+        } else if (sortingOptions === "Oldest") {
           return moment(a.updated).diff(moment(b.updated));
-        } else if (sortingOptionsArray[0] === "A-Z") {
+        } else if (sortingOptions === "A-Z") {
           return a.title.localeCompare(b.title);
-        } else if (sortingOptionsArray[0] === "Z-A") {
+        } else if (sortingOptions === "Z-A") {
           return b.title.localeCompare(a.title);
+        } else if (sortingOptions === "") {
+          return;
         }
-        return 0;
       });
     }
 
@@ -91,7 +93,7 @@ export default function MainContent({
   React.useEffect(() => {
     if (searchTerm !== "") {
       setSelectedGenres([]);
-      setSortingOptions([]);
+      setSortingOptions("");
     }
   }, [searchTerm]);
 
@@ -176,12 +178,16 @@ export default function MainContent({
           setIsPlayerOpen={setIsPlayerOpen}
           setEpisodePlaying={setEpisodePlaying}
           setFavouritesUpdated={setFavouritesUpdated}
+          showProgress={showProgress}
         />
-        {episodePlaying.episodeTitle === "" ? null : (
+        {episodePlaying.episodeTitle && (
           <MediaPlayer
             isPlayerOpen={isPlayerOpen}
             setIsPlayerOpen={setIsPlayerOpen}
             episodePlaying={episodePlaying}
+            showProgress={showProgress}
+            setProgressUpdated={setProgressUpdated}
+            session={session}
           />
         )}
       </div>
@@ -198,4 +204,6 @@ MainContent.propTypes = {
   episodePlaying: PropTypes.object,
   setEpisodePlaying: PropTypes.func,
   setFavouritesUpdated: PropTypes.func,
+  showProgress: PropTypes.object,
+  setProgressUpdated: PropTypes.func,
 };

@@ -5,14 +5,21 @@ import Header from "./components/Header";
 import MainContent from "./components/MainContent";
 import Footer from "./components/Footer";
 import { supabase } from "./components/database/supabase";
-import { fetchFavourites } from "./components/database/favourites";
+import {
+  fetchFavourites,
+  createFavouritesTable,
+} from "./components/database/favourites";
+import { loadProgress } from "./components/database/progress";
+
 function App() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [podcasts, setPodcasts] = React.useState([]);
-  const [isplayerOpen, setIsPlayerOpen] = React.useState(false);
+  const [isPlayerOpen, setIsPlayerOpen] = React.useState(false);
   const [session, setSession] = React.useState(null);
   const [userFavourites, setUserFavourites] = React.useState([]);
   const [favouritesUpdated, setFavouritesUpdated] = React.useState(false);
+  const [showProgress, setShowProgress] = React.useState({});
+  const [progressUpdated, setProgressUpdated] = React.useState(false);
   const [episodePlaying, setEpisodePlaying] = React.useState({
     podcastId: "",
     podcastTitle: "",
@@ -54,12 +61,32 @@ function App() {
 
   React.useEffect(() => {
     if (session) {
-      fetchFavourites(session.user.id).then((data) => {
-        setUserFavourites(data);
-        setFavouritesUpdated(false);
+      try {
+        fetchFavourites(session.user.id).then((data) => {
+          setUserFavourites(data);
+          setFavouritesUpdated(false);
+        });
+      } catch (error) {
+        console.error("Failed to fetch favourites:", error);
+      }
+    }
+
+    if (session && userFavourites.length === 0) {
+      createFavouritesTable(session.user.id);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session, favouritesUpdated]);
+
+  React.useEffect(() => {
+    if (session) {
+      loadProgress(session.user.id).then((data) => {
+        setShowProgress(data);
       });
     }
-  }, [session, favouritesUpdated]);
+
+    setProgressUpdated(false);
+  }, [session, progressUpdated]);
 
   React.useEffect(() => {
     const fetchPodcasts = async () => {
@@ -90,12 +117,15 @@ function App() {
       <MainContent
         session={session}
         podcasts={podcasts}
-        isPlayerOpen={isplayerOpen}
+        isPlayerOpen={isPlayerOpen}
         setIsPlayerOpen={setIsPlayerOpen}
         userFavourites={userFavourites}
         episodePlaying={episodePlaying}
         setEpisodePlaying={setEpisodePlaying}
         setFavouritesUpdated={setFavouritesUpdated}
+        showProgress={showProgress}
+        setShowProgress={setShowProgress}
+        setProgressUpdated={setProgressUpdated}
       />
 
       <Footer />
