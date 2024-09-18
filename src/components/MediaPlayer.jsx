@@ -22,7 +22,7 @@ export default function MediaPlayer({
   const handleSaveProgress = useCallback(() => {
     if (duration > 0) {
       const progressAsPercentage = (currentTime / duration) * 100;
-      console.log("Saving progress:", progressAsPercentage);
+
       saveProgress(
         session.user.id,
         episodePlaying.podcastId,

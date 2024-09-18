@@ -1,8 +1,12 @@
-# React + Vite
+To fill read me with instructions on navigating, where to find user stories implementation, improvements that can be made and netlify link for app.
+Go through all files and add comments.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Possible Improvements:
 
-Currently, two official plugins are available:
+- Linking app to a live API to fetch the latest podcasts
+- Implementing avatar functionality and profile updates with users name and personalised avatar. Began building functionality but not complete.
+- Profile overlay is not complete.
+- When begining my project I did not plan before jumping right in, even though the app works, I think I could have structured it better.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Netlify link
+https://66ea9c3b8b1f9348fbbc68c8--boisterous-daifuku-bb2dc2.netlify.app/#

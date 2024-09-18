@@ -16,7 +16,12 @@ import { IconContext } from "react-icons";
 import { BiUpload } from "react-icons/bi";
 import { clearProgress } from "./database/progress";
 
-export default function Profile({ isProfileOpen, setIsProfileOpen, session }) {
+export default function Profile({
+  isProfileOpen,
+  setIsProfileOpen,
+  session,
+  setProgressUpdated,
+}) {
   const [uploading, setUploading] = React.useState(false);
   const [avatarUrl, setAvatarUrl] = React.useState(null);
 
@@ -111,7 +116,9 @@ export default function Profile({ isProfileOpen, setIsProfileOpen, session }) {
                 <Link
                   size="sm"
                   href="#"
-                  onPress={() => clearProgress(session.user.id)}
+                  onPress={() =>
+                    clearProgress(session.user.id, setProgressUpdated)
+                  }
                 >
                   Clear Listening History
                 </Link>
@@ -140,4 +147,5 @@ Profile.propTypes = {
   isProfileOpen: PropTypes.bool,
   setIsProfileOpen: PropTypes.func,
   session: PropTypes.object,
+  setProgressUpdated: PropTypes.func,
 };

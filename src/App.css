@@ -143,7 +143,7 @@
 }
 
 .sorting-select {
-  padding: 5px;
+  padding: 15px;
   height: 2rem;
   max-width: 10rem;
 }
@@ -206,6 +206,10 @@
   display: flex;
   gap: 10px;
   padding: 0px 10px 10px 0px;
+}
+
+.share-url {
+  padding: 5px;
 }
 /* Footer */
 

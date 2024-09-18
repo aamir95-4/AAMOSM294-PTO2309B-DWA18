@@ -7,7 +7,7 @@ import {
 import Login from "./Login.jsx";
 import PropTypes from "prop-types";
 
-export default function Header({ session, setSession }) {
+export default function Header({ session, setSession, setProgressUpdated }) {
   return (
     <div>
       <Navbar>
@@ -19,7 +19,11 @@ export default function Header({ session, setSession }) {
 
         <NavbarContent justify="end">
           <NavbarItem>
-            <Login session={session} setSession={setSession} />
+            <Login
+              session={session}
+              setSession={setSession}
+              setProgressUpdated={setProgressUpdated}
+            />
           </NavbarItem>
         </NavbarContent>
       </Navbar>
@@ -30,4 +34,5 @@ export default function Header({ session, setSession }) {
 Header.propTypes = {
   session: PropTypes.object,
   setSession: PropTypes.func,
+  setProgressUpdated: PropTypes.func,
 };

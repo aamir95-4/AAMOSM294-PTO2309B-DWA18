@@ -56,7 +56,7 @@ function App() {
   React.useEffect(() => {
     setTimeout(() => {
       setIsLoading(false);
-    }, 1000);
+    }, 3000);
   }, []);
 
   React.useEffect(() => {
@@ -113,7 +113,11 @@ function App() {
 
   return (
     <>
-      <Header session={session} setSession={setSession} />
+      <Header
+        session={session}
+        setSession={setSession}
+        setProgressUpdated={setProgressUpdated}
+      />
       <MainContent
         session={session}
         podcasts={podcasts}

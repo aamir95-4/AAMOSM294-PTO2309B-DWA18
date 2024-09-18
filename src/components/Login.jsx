@@ -19,7 +19,7 @@ import {
 import PropTypes from "prop-types";
 import Profile from "./Profile";
 
-export default function Login({ session, setSession }) {
+export default function Login({ session, setSession, setProgressUpdated }) {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [signUp, setSignUp] = React.useState(false);
@@ -121,6 +121,7 @@ export default function Login({ session, setSession }) {
             isProfileOpen={isProfileOpen}
             setIsProfileOpen={setIsProfileOpen}
             session={session}
+            setProgressUpdated={setProgressUpdated}
           />
         </div>
       ) : (
@@ -193,13 +194,21 @@ export default function Login({ session, setSession }) {
                       Close
                     </Button>
                     {signUp && (
-                      <Button color="primary" onPress={handleSignUp}>
+                      <Button
+                        aria-label="Sign up"
+                        color="primary"
+                        onPress={handleSignUp}
+                      >
                         Sign up
                       </Button>
                     )}
 
                     {!signUp && (
-                      <Button color="primary" onPress={handleLogin}>
+                      <Button
+                        aria-label="Log in"
+                        color="primary"
+                        onPress={handleLogin}
+                      >
                         Log in
                       </Button>
                     )}
@@ -217,4 +226,5 @@ export default function Login({ session, setSession }) {
 Login.propTypes = {
   session: PropTypes.object,
   setSession: PropTypes.func,
+  setProgressUpdated: PropTypes.func,
 };

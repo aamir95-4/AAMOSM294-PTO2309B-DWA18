@@ -68,11 +68,9 @@ export const saveProgress = async (
       }
     }
 
-    console.log("Progress saved successfully");
     progressUpdated(true);
   } catch (error) {
     console.error("Error in saveProgress:", error);
-    // You might want to handle this error in your UI
   }
 };
 
@@ -85,7 +83,7 @@ export const loadProgress = async (userId) => {
   return { data, error };
 };
 
-export const clearProgress = async (userId) => {
+export const clearProgress = async (userId, progressUpdated) => {
   const { error } = await supabase
     .from("progress")
     .delete()
@@ -97,6 +95,8 @@ export const clearProgress = async (userId) => {
   } else {
     console.log("Progress cleared successfully.");
   }
+
+  progressUpdated(true);
 
   return error;
 };
