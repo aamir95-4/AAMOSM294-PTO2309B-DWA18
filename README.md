@@ -9,4 +9,4 @@ Possible Improvements:
 - When begining my project I did not plan before jumping right in, even though the app works, I think I could have structured it better.
 
 Netlify link
-https://66ea9c3b8b1f9348fbbc68c8--boisterous-daifuku-bb2dc2.netlify.app/#
+https://66eb2f38be66f584919027c1--remarkable-churros-3c84e7.netlify.app
