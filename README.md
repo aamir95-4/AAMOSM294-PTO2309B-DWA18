@@ -113,5 +113,6 @@ Project is deployed to a custom Netlify URL
 - Profile overlay is not complete.
 - When begining my project I did not plan before jumping right in, even though the app works, I think I could have structured it better.
 
-Netlify link
+## Netlify link
+
 https://66eb2f38be66f584919027c1--remarkable-churros-3c84e7.netlify.app
